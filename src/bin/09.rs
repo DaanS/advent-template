@@ -34,6 +34,7 @@ pub fn part_one(input: &str) -> Option<u64> {
 
 struct Segment {
     id: Option<usize>,
+    start: usize,
     len: usize
 }
 
