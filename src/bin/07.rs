@@ -61,9 +61,4 @@ mod tests {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
         assert_eq!(result, Some(11387));
     }
-
-    #[test]
-    fn test_concat_tail() {
-        assert_eq!(concat_tail(&[1, 2], 3), &[1, 23]);
-    }
 }

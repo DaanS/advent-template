@@ -1,4 +1,4 @@
-use std::{cmp::Ordering, collections::HashMap, hash::Hash};
+use std::{cmp::Ordering, collections::HashMap};
 
 advent_of_code::solution!(5);
 

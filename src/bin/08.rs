@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use advent_of_code::{index_offset, template};
+use advent_of_code::{index_offset};
 
 advent_of_code::solution!(8);
 

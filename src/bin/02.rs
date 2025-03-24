@@ -1,6 +1,3 @@
-use std::fs::File;
-use std::io::Write;
-
 advent_of_code::solution!(2);
 
 fn parse_input(input: &str) -> Vec<Vec<u64>> {
@@ -51,21 +48,21 @@ fn find_problem(diffs: &[i64]) -> Option<usize> {
     None
 }
 
-fn check_problem_with_dampener(diffs: &[i64], problem: usize, ascending: bool) -> Option<usize> {
-    // Didn't work because you can't just remove a diff, you need to substitute the sum of 2 diffs
-    find_problem(&[&diffs[..problem], &diffs[problem + 1..]].concat())
-}
-
-fn find_problem_with_dampener(diffs: &[i64]) -> Option<usize> {
-    let ascending_count = diffs.iter().filter(|&&d| d > 0).count();
-    let descending_count = diffs.iter().filter(|&&d| d < 0).count();
-    let ascending = ascending_count > descending_count;
-    if let Some(problem) = find_problem(diffs) {
-        let final_problem = check_problem_with_dampener(diffs, problem, ascending);
-        return final_problem;
-    }
-    None
-}
+//fn check_problem_with_dampener(diffs: &[i64], problem: usize, ascending: bool) -> Option<usize> {
+//    // Didn't work because you can't just remove a diff, you need to substitute the sum of 2 diffs
+//    find_problem(&[&diffs[..problem], &diffs[problem + 1..]].concat())
+//}
+//
+//fn find_problem_with_dampener(diffs: &[i64]) -> Option<usize> {
+//    let ascending_count = diffs.iter().filter(|&&d| d > 0).count();
+//    let descending_count = diffs.iter().filter(|&&d| d < 0).count();
+//    let ascending = ascending_count > descending_count;
+//    if let Some(problem) = find_problem(diffs) {
+//        let final_problem = check_problem_with_dampener(diffs, problem, ascending);
+//        return final_problem;
+//    }
+//    None
+//}
 
 pub fn part_two(input: &str) -> Option<u64> {
     let records = parse_input(input);
