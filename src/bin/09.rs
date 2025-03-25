@@ -41,18 +41,39 @@ struct Segment {
 fn parse_input_defrag(input: &str) -> Vec<Segment> {
     let mut free = false;
     let mut id = 0;
+    let mut start = 0;
+
     input.chars().filter_map(|c| {
         if let Some(len) = c.to_digit(10) {
             let val = if free { None } else { Some(id) };
+            let res = Some(Segment{id: val, start: start, len: len as usize});
+
             free = !free;
             if free { id += 1 };
-            Some(Segment{id: val, len: len as usize})
+            start += len as usize;
+
+            res
         } else { None }
     }).collect()
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
-    None
+    let mut segments = parse_input_defrag(input);
+    let max_id = segments.iter().rfind(|seg| seg.id.is_some()).unwrap().id.unwrap();
+
+    for id in max_id..0 {
+        let file_idx = segments.iter().rposition(|seg| seg.id == Some(id)).unwrap();
+        if let Some(free_idx) = segments.iter().position(|seg| seg.id == None && seg.len >= segments[file_idx].len) {
+            segments[file_idx].id = None;
+            segments[free_idx].id = Some(id);
+            if segments[free_idx].len > segments[file_idx].len {
+                segments.insert(free_idx + 1, Segment{id: None, start: segments[free_idx].start + segments[file_idx].len, len: segments[free_idx].len - segments[file_idx].len});
+                segments[free_idx].len = segments[file_idx].len;
+            }
+        }
+    }
+
+    Some(segments.iter().filter_map(|seg| seg.id.map(|id| id * (seg.start * seg.len + (0..seg.len).sum::<usize>()))).sum::<usize>() as u64)
 }
 
 #[cfg(test)]
@@ -68,6 +89,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(2858));
     }
 }
