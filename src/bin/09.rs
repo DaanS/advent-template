@@ -9,7 +9,7 @@ fn parse_input(input: &str) -> Vec<Option<u64>> {
     for c in input.chars() {
         if let Some(size) = c.to_digit(10) {
             let val = if free { None } else { Some(id) };
-            for  i in 0..size { res.push(val); }
+            for  _ in 0..size { res.push(val); }
             free = !free;
             if free { id += 1; }
         }
@@ -57,18 +57,31 @@ fn parse_input_defrag(input: &str) -> Vec<Segment> {
     }).collect()
 }
 
+fn print_segments(segments: &Vec<Segment>) {
+    for seg in segments {
+        let id = if let Some(id) = seg.id { char::from_digit(id as u32, 10).unwrap() } else { '.' };
+        for _ in 0..seg.len {
+            print!("{id}");
+        }
+    }
+    println!();
+}
+
 pub fn part_two(input: &str) -> Option<u64> {
     let mut segments = parse_input_defrag(input);
     let max_id = segments.iter().rfind(|seg| seg.id.is_some()).unwrap().id.unwrap();
 
-    for id in max_id..0 {
+
+    for id in (1..=max_id).rev() {
         let file_idx = segments.iter().rposition(|seg| seg.id == Some(id)).unwrap();
         if let Some(free_idx) = segments.iter().position(|seg| seg.id == None && seg.len >= segments[file_idx].len) {
-            segments[file_idx].id = None;
-            segments[free_idx].id = Some(id);
-            if segments[free_idx].len > segments[file_idx].len {
-                segments.insert(free_idx + 1, Segment{id: None, start: segments[free_idx].start + segments[file_idx].len, len: segments[free_idx].len - segments[file_idx].len});
-                segments[free_idx].len = segments[file_idx].len;
+            if free_idx < file_idx {
+                segments[file_idx].id = None;
+                segments[free_idx].id = Some(id);
+                if segments[free_idx].len > segments[file_idx].len {
+                    segments.insert(free_idx + 1, Segment{id: None, start: segments[free_idx].start + segments[file_idx].len, len: segments[free_idx].len - segments[file_idx].len});
+                    segments[free_idx].len = segments[file_idx + 1].len;
+                }
             }
         }
     }
