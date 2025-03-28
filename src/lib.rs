@@ -38,7 +38,7 @@ impl<T: Default> Grid<T> {
     pub fn at(&self, (x, y): (usize, usize)) -> Option<&T> {
         self.checked_index_of((x, y)).map(|idx| &self.cells[idx])
     }
-    fn at_mut(&mut self, (x, y): (usize, usize)) -> Option<&mut T> {
+    pub fn at_mut(&mut self, (x, y): (usize, usize)) -> Option<&mut T> {
         self.checked_index_of((x, y)).map(|idx| &mut self.cells[idx])
     }
     fn at_mut_pair(&mut self, (x1, y1): (usize, usize), (x2, y2): (usize, usize)) -> (Option<&mut T>, Option<&mut T>) {
@@ -60,7 +60,7 @@ impl<T: Default> Grid<T> {
         self.cells[idx] = val;
     }
 
-    pub fn visit_mut<F>(&mut self, start: (usize, usize), mut visit_fn: F) where F: FnMut(&T, Option<&mut T>, (usize, usize), (usize, usize)) -> bool {
+    pub fn visit_mut<F>(&mut self, start: (usize, usize), mut visit_fn: F) where F: FnMut(&T, Option<&mut T>, (usize, usize), Option<(usize, usize)>) -> bool {
         const CARDINALS: [(isize, isize); 4] = [(1, 0), (0, 1), (-1, 0), (0, -1)];
 
         if !self.exists(start) { return; }
@@ -76,9 +76,9 @@ impl<T: Default> Grid<T> {
             for (dx, dy) in CARDINALS {
                 if let Some(new_pos) = index_offset(prev_pos, (dx, dy), (self.width, self.cells.len() / self.width)) {
                     let (prev, new) = self.at_mut_pair(prev_pos, new_pos);
-                    if visit_fn(prev.unwrap(), new, prev_pos, new_pos) && !visited.contains(&new_pos) { queue.push_back(new_pos); }
+                    if !visited.contains(&new_pos) && !queue.contains(&new_pos) && visit_fn(prev.unwrap(), new, prev_pos, Some(new_pos)) { queue.push_back(new_pos); }
                 } else {
-                    visit_fn(self.at(prev_pos).unwrap(), None, prev_pos, (0, 0));
+                    visit_fn(self.at(prev_pos).unwrap(), None, prev_pos, None);
                 }
             }
         }

@@ -4,7 +4,6 @@ use advent_of_code::Grid;
 
 advent_of_code::solution!(10);
 
-
 //fn parse_input(input: &str) -> Vec<Vec<u8>> {
 //    let mut map = Vec::new();
 //
