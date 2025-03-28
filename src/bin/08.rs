@@ -26,10 +26,10 @@ fn mark_antinodes((ax_u, ay_u): (usize, usize), (bx_u, by_u): (usize, usize), ma
     let (ax, ay, bx, by) = (ax_u as isize, ay_u as isize, bx_u as isize, by_u as isize);
     let (dx, dy) = (ax - bx, ay - by); // from b to a
     let (w, h) = (map.len(), map[0].len());
-    if let Some((c1x, c1y)) = index_offset(ax_u, ay_u, dx, dy, w, h) {
+    if let Some((c1x, c1y)) = index_offset((ax_u, ay_u), (dx, dy), (w, h)) {
         map[c1x][c1y] = true;
     }
-    if let Some((c2x, c2y)) = index_offset(ax_u, ay_u, -2 * dx, -2 * dy, w, h) {
+    if let Some((c2x, c2y)) = index_offset((ax_u, ay_u), (-2 * dx, -2 * dy), (w, h)) {
         map[c2x][c2y] = true;
     }
 }
@@ -39,12 +39,12 @@ fn mark_antinodes_harmonic((ax_u, ay_u): (usize, usize), (bx_u, by_u): (usize, u
     let (dx, dy) = (ax - bx, ay - by); // from b to a
     let (w, h) = (map.len(), map[0].len());
     let mut n = 0;
-    while let Some((cx, cy)) = index_offset(ax_u, ay_u, n * dx, n * dy, w, h) {
+    while let Some((cx, cy)) = index_offset((ax_u, ay_u), (n * dx, n * dy), (w, h)) {
         map[cx][cy] = true;
         n += 1;
     }
     n = 1;
-    while let Some((cx, cy)) = index_offset(ax_u, ay_u, -n * dx, -n * dy, w, h) {
+    while let Some((cx, cy)) = index_offset((ax_u, ay_u), (-n * dx, -n * dy), (w, h)) {
         map[cx][cy] = true;
         n += 1;
     }
