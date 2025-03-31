@@ -21,14 +21,10 @@ pub fn part_one(input: &str) -> Option<u64> {
             let mut perimeter = 0;
             grid.at_mut((x, y)).unwrap().visited = true;
 
-            println!("Starting from {:?}", (x, y));
             grid.visit_mut((x, y), |old, new_opt, _, new_pos| {
-                println!("Visiting {:?}", new_pos);
-                // rethink how visited should work for this
-                //if new_opt.is_some() && old.c == new_opt.unwrap().c { area += 1; new_opt.unwrap().visited = true; true }
                 if let Some(new) = new_opt {
-                    if old.c == new.c { area += 1; new.visited = true; true }
-                    else { perimeter += 1; false }
+                    if !new.visited && old.c == new.c { area += 1; new.visited = true; true }
+                    else { if old.c != new.c { perimeter += 1; } false }
                 }
                 else { perimeter += 1; false }
             });

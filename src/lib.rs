@@ -76,7 +76,7 @@ impl<T: Default> Grid<T> {
             for (dx, dy) in CARDINALS {
                 if let Some(new_pos) = index_offset(prev_pos, (dx, dy), (self.width, self.cells.len() / self.width)) {
                     let (prev, new) = self.at_mut_pair(prev_pos, new_pos);
-                    if !visited.contains(&new_pos) && !queue.contains(&new_pos) && visit_fn(prev.unwrap(), new, prev_pos, Some(new_pos)) { queue.push_back(new_pos); }
+                    if visit_fn(prev.unwrap(), new, prev_pos, Some(new_pos)) { queue.push_back(new_pos); }
                 } else {
                     visit_fn(self.at(prev_pos).unwrap(), None, prev_pos, None);
                 }
