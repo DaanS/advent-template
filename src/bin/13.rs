@@ -16,12 +16,12 @@ struct Machine {
 fn parse_input(input: &str) -> Vec<Machine> {
     let mut res = Vec::new();
 
-    let button_a_regex= Regex::new(r"Button A: X+(\d+), Y+(\d+)").unwrap();
-    let button_b_regex = Regex::new(r"Button B: X+(\d+), Y+(\d+)").unwrap();
+    let button_a_regex= Regex::new(r"Button A: X\+(\d+), Y\+(\d+)").unwrap();
+    let button_b_regex = Regex::new(r"Button B: X\+(\d+), Y\+(\d+)").unwrap();
     let prize_regex = Regex::new(r"Prize: X=(\d+), Y=(\d+)").unwrap();
 
     let mut lines: VecDeque<_> = input.split('\n').collect();
-    while !lines.len() >= 3 {
+    while lines.len() >= 3 {
         let line = lines.pop_front().unwrap();
         if line.trim().is_empty() { continue; }
 
@@ -41,9 +41,25 @@ fn parse_input(input: &str) -> Vec<Machine> {
     res
 }
 
+fn solve_machine(machine: &Machine) -> usize {
+    let a_max = 100.min(machine.px / machine.ax).min(machine.py / machine.ay);
+    let mut min_cost = usize::MAX;
+
+    for a in 0..=a_max {
+        let (rx, ry) = (machine.px - a * machine.ax, machine.py - a * machine.ay);
+        let b = rx / machine.bx;
+        if (rx == b * machine.bx) && (ry == b * machine.by) { 
+            let cost = 3 * a + b;
+            if cost < min_cost { min_cost = cost; }
+        }
+    }
+
+    if min_cost == usize::MAX { 0 } else { min_cost }
+}
+
 pub fn part_one(input: &str) -> Option<u64> {
     let machines = parse_input(input);
-    None
+    Some(machines.iter().map(|machine| solve_machine(machine)).sum::<usize>() as u64)
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
