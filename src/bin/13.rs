@@ -4,6 +4,7 @@ use regex::Regex;
 
 advent_of_code::solution!(13);
 
+#[derive(Debug)]
 struct Machine {
     ax: isize,
     ay: isize,
@@ -75,8 +76,11 @@ fn solve_machine(machine: &Machine, max: Option<usize>) -> usize {
 
     //if min_cost == usize::MAX { 0 } else { min_cost }
     if machine.bx + machine.ax * machine.by == 0 { return 0; }
-    let b = -(machine.ax * machine.py - machine.px * machine.ay) / (machine.bx * machine.ay + machine.ax * machine.by);
-    let a = (machine.px - b * machine.bx) / machine.ax;
+    let b = -(machine.ax * machine.py - machine.px * machine.ay) as f64 / (machine.bx * machine.ay + machine.ax * machine.by) as f64;
+    let a = (machine.px as f64 - b * machine.bx as f64) as f64 / machine.ax as f64;
+    println!("Machine {:?}: a = {}, b = {}", machine, a, b);
+
+    if b.trunc() == b && a.trunc() == a { (3. * a + b) as usize } else { 0 }
 }
 
 pub fn part_one(input: &str) -> Option<u64> {
