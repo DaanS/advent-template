@@ -8,13 +8,14 @@ pub fn index_offset((x_u, y_u): (usize, usize), (dx, dy): (isize, isize),  (widt
     let (x, y) = (x_u as isize + dx, y_u as isize + dy);
     if x >= 0 && y >= 0 && (x as usize) < width && (y as usize) < height { Some((x as usize, y as usize)) } else { None }
 }
+
 pub struct Grid<T: Default> {
     cells: Vec<T>,
     pub width: usize,
     pub height: usize
 }
 
-impl<T: Default> Grid<T> {
+impl<T: Default + PartialEq> Grid<T> {
     pub fn new(w: usize, h: usize) -> Self { Self{ cells: Vec::with_capacity(w * h), width: w, height: h } }
     pub fn from_char_grid(input: &str, construct_fn: fn(char) -> T) -> Self {
         let mut cells = Vec::with_capacity(input.len() - input.chars().filter(|c| *c == '\n').count());
@@ -41,6 +42,9 @@ impl<T: Default> Grid<T> {
     pub fn at_mut(&mut self, (x, y): (usize, usize)) -> Option<&mut T> {
         self.checked_index_of((x, y)).map(|idx| &mut self.cells[idx])
     }
+    pub fn position(&self, val: T) -> Option<(usize, usize)> {
+        self.cells.iter().position(|cell| *cell == val).map(|idx| (idx % self.width, idx / self.width))
+    }
     fn at_mut_pair(&mut self, (x1, y1): (usize, usize), (x2, y2): (usize, usize)) -> (Option<&mut T>, Option<&mut T>) {
         let idx1 = self.checked_index_of((x1, y1));
         let idx2 = self.checked_index_of((x2, y2));
@@ -54,7 +58,7 @@ impl<T: Default> Grid<T> {
             }
         }
     }
-    fn set(&mut self, (x, y): (usize, usize), val: T) {
+    pub fn set(&mut self, (x, y): (usize, usize), val: T) {
         let idx = self.index_of((x, y));
         if idx >= self.cells.len() { self.cells.resize_with(idx + 1, Default::default); }
         self.cells[idx] = val;
