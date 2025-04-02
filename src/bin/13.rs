@@ -5,12 +5,12 @@ use regex::Regex;
 advent_of_code::solution!(13);
 
 struct Machine {
-    ax: usize,
-    ay: usize,
-    bx: usize,
-    by: usize,
-    px: usize,
-    py: usize
+    ax: isize,
+    ay: isize,
+    bx: isize,
+    by: isize,
+    px: isize,
+    py: isize
 }
 
 fn parse_input(input: &str) -> Vec<Machine> {
@@ -41,29 +41,53 @@ fn parse_input(input: &str) -> Vec<Machine> {
     res
 }
 
-fn solve_machine(machine: &Machine) -> usize {
-    let a_max = 100.min(machine.px / machine.ax).min(machine.py / machine.ay);
-    let mut min_cost = usize::MAX;
+///
+/// a*ax + b*bx = px
+/// a*ay + b*by = py
+/// ==
+/// (ax, bx)(a)   (px)
+/// (ay, by)(b) = (py)
 
-    for a in 0..=a_max {
-        let (rx, ry) = (machine.px - a * machine.ax, machine.py - a * machine.ay);
-        let b = rx / machine.bx;
-        if (rx == b * machine.bx) && (ry == b * machine.by) { 
-            let cost = 3 * a + b;
-            if cost < min_cost { min_cost = cost; }
-        }
-    }
+///
+/// a*ax + b*bx = px
+/// a*ax = px - b*bx
+/// a = (px - b*bx) / ax
+/// 
+/// ((px - b*bx) / ax * ay) + b*by = py
+/// (px*ay - b*bx*ay + b*ax*by) / ax = py
+/// px*ay / ax - b * (bx*ay + ax*by) / ax = py
+/// -b * (bx*ay + ax*by) / ax = py - px*ay / ax
+/// -b * (bx*ay + ax*by) = ax*py - px*ay
+/// -b = (ax*py - px*ay) / (bx*ay + ax*by)
+/// 
+fn solve_machine(machine: &Machine, max: Option<usize>) -> usize {
+    //let a_max = (machine.px / machine.ax).min(machine.py / machine.ay).min(max.unwrap_or(usize::MAX));
+    //let mut min_cost = usize::MAX;
 
-    if min_cost == usize::MAX { 0 } else { min_cost }
+    //for a in 0..=a_max {
+    //    let (rx, ry) = (machine.px - a * machine.ax, machine.py - a * machine.ay);
+    //    let b = rx / machine.bx;
+    //    if (rx == b * machine.bx) && (ry == b * machine.by) { 
+    //        let cost = 3 * a + b;
+    //        if cost < min_cost { min_cost = cost; }
+    //    }
+    //}
+
+    //if min_cost == usize::MAX { 0 } else { min_cost }
+    if machine.bx + machine.ax * machine.by == 0 { return 0; }
+    let b = -(machine.ax * machine.py - machine.px * machine.ay) / (machine.bx * machine.ay + machine.ax * machine.by);
+    let a = (machine.px - b * machine.bx) / machine.ax;
 }
 
 pub fn part_one(input: &str) -> Option<u64> {
     let machines = parse_input(input);
-    Some(machines.iter().map(|machine| solve_machine(machine)).sum::<usize>() as u64)
+    Some(machines.iter().map(|machine| solve_machine(machine, Some(100))).sum::<usize>() as u64)
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
-    None
+    let mut machines = parse_input(input);
+    for machine in machines.iter_mut() { machine.px += 10000000000000; machine.py += 10000000000000; }
+    Some(machines.iter().map(|machine| solve_machine(machine, None)).sum::<usize>() as u64)
 }
 
 #[cfg(test)]
