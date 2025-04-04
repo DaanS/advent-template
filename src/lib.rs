@@ -10,7 +10,7 @@ pub fn index_offset((x_u, y_u): (usize, usize), (dx, dy): (isize, isize),  (widt
 }
 
 pub struct Grid<T: Default> {
-    cells: Vec<T>,
+    pub cells: Vec<T>,
     pub width: usize,
     pub height: usize
 }

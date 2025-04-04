@@ -2,6 +2,7 @@ use advent_of_code::Grid;
 
 advent_of_code::solution!(12);
 
+#[derive(PartialEq)]
 struct Cell {
     c: char,
     visited: bool

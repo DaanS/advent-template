@@ -16,7 +16,8 @@
                     // want to debug one file regardless of the active file in
                     // the editor.
                     "--bin=${fileBasenameNoExtension}",
-                    "--package=advent_of_code"
+                    "--package=advent_of_code",
+                    "--nocapture"
                 ],
             },
             "args": [],
